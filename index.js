@@ -6,17 +6,30 @@ const app = express();
 app.use(express.json());
 
 const client = new Client({
-    authStrategy: new LocalAuth(),
+    authStrategy: new LocalAuth({ dataPath: './.wwebjs' }),
     puppeteer: {
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
+
 client.on('qr', qr => {
     qrcode.generate(qr, { small: true });
 });
 
 client.on('ready', () => {
     console.log('✅ Bot is ready!');
+});
+
+client.on('message', async msg => {
+    console.log(`📨 Mensaje recibido de ${msg.from}: "${msg.body}"`);
+
+    if (msg.body.toLowerCase() === 'hola') {
+        await msg.reply('¡Hola! Soy tu bot 🤖');
+    }
+
+    if (msg.body.toLowerCase() === 'quien eres') {
+        await msg.reply('Soy el bot de pruebas de Sheen 🚀');
+    }
 });
 
 // Endpoint para recibir mensajes desde n8n
@@ -36,6 +49,13 @@ app.post('/send-message', async (req, res) => {
     }
 });
 
+// Endpoint para ver el status del bot
+app.get('/status', async (req, res) => {
+    res.json({
+        connected: client.info !== undefined,
+        info: client.info || 'Bot no está listo aún'
+    });
+});
 
 client.initialize();
 
