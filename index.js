@@ -6,9 +6,11 @@ const app = express();
 app.use(express.json());
 
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
 });
-
 client.on('qr', qr => {
     qrcode.generate(qr, { small: true });
 });
