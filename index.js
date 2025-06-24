@@ -23,17 +23,24 @@ client.on('ready', () => {
 app.post('/send-message', async (req, res) => {
     const { number, message } = req.body;
     const chatId = number + '@c.us';
+    
+    console.log('📥 Recibido:', { number, message });
+
     try {
         await client.sendMessage(chatId, message);
+        console.log(`✅ Mensaje enviado a ${number}: "${message}"`);
         res.send({ status: 'Mensaje enviado' });
     } catch (error) {
-        console.error('❌ Error:', error);
+        console.error('❌ Error al enviar:', error);
         res.status(500).send({ error: 'No se pudo enviar el mensaje' });
     }
 });
 
+
 client.initialize();
 
-app.listen(3000, () => {
-    console.log('🚀 Servidor Express escuchando en puerto 3000');
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor Express escuchando en puerto ${PORT}`);
 });
